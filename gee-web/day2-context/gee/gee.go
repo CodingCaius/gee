@@ -14,7 +14,7 @@ type Engine struct {
 
 //New is the constructor of gee.Engine
 func New() *Engine {
-    return &Engine{router: newRouter()} //创建一个指针，初始化router字段为空
+    return &Engine{router: newRouter()} //创建一个新的 Engine 实例，并通过 newRouter() 函数创建一个新的路由器实例，并将其赋值给 router 字段
 }
 
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
