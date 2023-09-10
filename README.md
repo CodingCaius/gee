@@ -8,5 +8,5 @@ Gee 是一个模仿 [gin](https://github.com/gin-gonic/gin) 实现的 Web 框架
 - 第四天：分组控制(Group) | [Code](gee-web/day4-group)
 - 第五天：中间件(Middleware) | [Code](gee-web/day5-middleware)
 - 第六天：HTML模板(Template) | [Code](gee-web/day6-template)
-- 第七天：错误恢复(Panic Recover | [Code](gee-web/day7-panic-recover)
+- 第七天：错误恢复(Panic Recover) | [Code](gee-web/day7-panic-recover)
 
