@@ -1,6 +1,6 @@
 ### 7天用Go从零实现Web框架 - Gee
 
-Gee 是一个模仿 [gin](https://github.com/gin-gonic/gin) 实现的 Web 框架，[Go Gin简明教程](https://geektutu.com/post/quick-go-gin.html)可以快速入门。
+Gee 是一个模仿 [gin](https://github.com/gin-gonic/gin) 实现的 Web 框架。
 
 - 第一天：前置知识(http.Handler接口) | [Code](gee-web/day1-http-base)
 - 第二天：上下文设计(Context) | [Code](gee-web/day2-context)
