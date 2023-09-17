@@ -10,8 +10,8 @@ import (
 
 type Session struct {
 	db      *sql.DB // 使用 sql.Open() 方法连接数据库成功之后返回的指针
-	sql     strings.Builder
-	sqlVars []interface{}
+	sql     strings.Builder // 用于构建SQL查询语句
+	sqlVars []interface{} // 用于存储SQL查询语句中的参数
 }
 
 // 用于创建一个新的 Session 对象
@@ -38,7 +38,9 @@ func (s *Session) Raw(sql string, values ...interface{}) *Session {
 	return s
 }
 
-// Exec raw sql with sqlVars
+// 封装三个原生方法
+
+// Exec 用于执行原始的 SQL 查询或操作
 func (s *Session) Exec() (result sql.Result, err error) {
 	defer s.Clear()
 	log.Info(s.sql.String(), s.sqlVars)
@@ -48,7 +50,7 @@ func (s *Session) Exec() (result sql.Result, err error) {
 	return
 }
 
-// QueryRow gets a record from db
+// QueryRow 仅返回查询结果的第一行
 func (s *Session) QueryRow() *sql.Row {
 	defer s.Clear()
 	log.Info(s.sql.String(), s.sqlVars)
