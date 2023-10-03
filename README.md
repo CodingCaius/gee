@@ -10,6 +10,45 @@ Gee 是一个模仿 [gin](https://github.com/gin-gonic/gin) 实现的 Web 框架
 - 第六天：HTML模板(Template) | [Code](gee-web/day6-template)
 - 第七天：错误恢复(Panic Recover) | [Code](gee-web/day7-panic-recover)
 
+ ### 7天用Go从零实现ORM框架 GeeORM
+
+GeeORM 是一个模仿 [gorm](https://github.com/jinzhu/gorm) 和 [xorm](https://github.com/go-xorm/xorm) 的 ORM 框架
+geeorm 接口设计上主要参考了 xorm，一些细节实现上参考了 gorm。  
+gorm 目前支持的特性有：  
+表的创建、删除、迁移。  
+记录的增删查改，查询条件的链式操作。  
+单一主键的设置(primary key)。  
+钩子(在创建/更新/删除/查找之前或之后)  
+事务(transaction)。  
+
+- 第一天：database/sql 基础 | [Code](gee-orm/day1-database-sql)
+- 第二天：对象表结构映射 | [Code](gee-orm/day2-对象表结构映射)
+- 第三天：记录新增和查询 | [Code](gee-orm/day3-记录新增和查询)
+- 第四天：链式操作与更新删除 | [Code](gee-orm/day4-链式操作与更新删除)
+- 第五天：实现钩子(Hooks) | [Code](gee-orm/day5-实现钩子)
+- 第六天：支持事务(Transaction) | [Code](gee-orm/day6-支持事务)
+- 第七天：数据库迁移(Migrate) | [Code](gee-orm/day7-数据库迁移)
+
+### 7天用Go从零实现分布式缓存 GeeCache
+ 
+GeeCache 是一个模仿 [groupcache](https://github.com/golang/groupcache) 实现的分布式缓存系统  
+支持特性有：  
+
+单机缓存和基于 HTTP 的分布式缓存  
+最近最少访问(Least Recently Used, LRU) 缓存策略  
+使用 Go 锁机制防止缓存击穿  
+使用一致性哈希选择节点，实现负载均衡  
+使用 protobuf 优化节点间二进制通信  
+
+- 第一天：LRU 缓存淘汰策略 | [Code](gee-cache/day1-lru)
+- 第二天：单机并发缓存 | [Code](gee-cache/day2-单机并发缓存)
+- 第三天：HTTP 服务端 | [Code](gee-cache/day3-HTTP服务端)
+- 第四天：一致性哈希(Hash) | [Code](gee-cache/day4-一致性哈希)
+- 第五天：分布式节点 | [Code](gee-cache/day5-分布式节点)
+- 第六天：防止缓存击穿 | [Code](gee-cache/day6-防止缓存击穿)
+- 第七天：使用 Protobuf 通信 | [Code](gee-cache/day7-使用Protobuf通信)
+
+
 
 
 ### 7天用Go从零实现RPC框架 GeeRPC
