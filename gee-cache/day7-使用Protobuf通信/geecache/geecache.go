@@ -5,6 +5,7 @@ package geecache
 import (
 	"fmt"
 	"geecache/geecache/singleflight"
+	pb "geecache/geecache/geecachepb"
 	"log"
 	"sync"
 )
@@ -151,5 +152,3 @@ func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
 	}
 	return ByteView{b: res.Value}, nil
 }
-
-

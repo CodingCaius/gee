@@ -7,14 +7,17 @@
 package geecache
 
 import (
-	"fmt"
 	"geecache/geecache/consistenthash"
+	pb "geecache/geecache/geecachepb"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -31,8 +34,8 @@ type HTTPPool struct {
 
 	// 为 HTTPPool 添加节点选择的功能
 
-	mu          sync.Mutex // guards peers and httpGetters
-	peers       *consistenthash.Map // 类型是一致性哈希算法的 Map，用来根据具体的 key 选择节点
+	mu          sync.Mutex             // guards peers and httpGetters
+	peers       *consistenthash.Map    // 类型是一致性哈希算法的 Map，用来根据具体的 key 选择节点
 	httpGetters map[string]*httpGetter // 映射远程节点与对应的 httpGetter。每一个远程节点对应一个 httpGetter，因为 httpGetter 与远程节点的地址 baseURL 有关
 }
 
@@ -83,9 +86,19 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 使用 Protocol Buffers 库的 proto.Marshal 函数，将缓存数据封装成 Protocol Buffers 格式的消息（pb.Response），然后将该消息的字节表示写入 HTTP 响应体中
+	// 样做的目的是将缓存数据以 Protocol Buffers 格式返回给客户端。
+
+	// Write the value to the response body as a proto message.
+	body, err := proto.Marshal(&pb.Response{Value: view.ByteSlice()})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// 设置响应头并写入响应数据
 	w.Header().Set("Content-Type", "application/octet-stream") // 二进制流
-	w.Write(view.ByteSlice())
+	w.Write(body)
 }
 
 // Set 用于更新缓存池中的节点列表
@@ -125,34 +138,40 @@ type httpGetter struct {
 	baseURL string // 表示将要访问的远程节点的地址，例如 http://example.com/_geecache/
 }
 
-func (h *httpGetter) Get(group string, key string) ([]byte, error) {
+func (h *httpGetter) Get(in *pb.Request, out *pb.Response) error {
 	// 将 baseURL 与传入的 group 和 key 参数组合起来，构建了一个 URL 字符串。使用 fmt.Sprintf 进行字符串格式化
 	u := fmt.Sprintf(
 		"%v%v/%v",
 		h.baseURL,
-		url.QueryEscape(group),
-		url.QueryEscape(key),
+		url.QueryEscape(in.GetGroup()),
+		url.QueryEscape(in.GetKey()),
 	)
 
 	// 发起一个 HTTP GET 请求到构建好的 URL
 	res, err := http.Get(u)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	// defer 语句确保在函数返回后关闭响应体
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("server returned: %v", res.Status)
+		return fmt.Errorf("server returned: %v", res.Status)
 	}
 
 	// 将响应体读取到一个字节切片中。如果在这个过程中出现错误，就返回一个错误
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		return nil, fmt.Errorf("reading response body: %v", err)
+		return fmt.Errorf("reading response body: %v", err)
 	}
 
-	return bytes, nil
+	// 使用 Protocol Buffers 库的 proto.Unmarshal 函数，
+	// 将字节切片中的二进制数据解码为 Protocol Buffers 格式，并将结果存储在 out 中。
+	if err = proto.Unmarshal(bytes, out); err != nil {
+		return fmt.Errorf("decoding response body: %v", err)
+	}
+
+	return nil
 }
 
 var _ PeerGetter = (*httpGetter)(nil)
